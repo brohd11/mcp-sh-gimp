@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/brohd11/agent-shell/profile"
+	"github.com/brohd11/mcp-sh/profile"
 )
 
 func load(t *testing.T) *profile.Loaded {
@@ -43,7 +43,7 @@ func TestEmbeddedCommands(t *testing.T) {
 
 func TestEmbeddedPlugin(t *testing.T) {
 	src := string(pluginSrc)
-	if !strings.Contains(src, "Gimp.main(GimpShellBridge.__gtype__") || !bridgeVersion.MatchString(src) {
+	if !strings.Contains(src, "Gimp.main(McpShGimpBridge.__gtype__") || !bridgeVersion.MatchString(src) {
 		t.Fatal("embedded plug-in is not the bridge, or has no BRIDGE_VERSION line")
 	}
 }

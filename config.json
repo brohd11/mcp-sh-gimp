@@ -1,11 +1,11 @@
 {
   "title": "the running GIMP session",
   "instructions": "Commands run inside the open GIMP. 'images' lists open images; 'layers' lists every layer of every open image, inside groups too, as JSON lines with an id and an IMAGE/Group/Layer path (unsaved images are #ID). 'layer set' edits many layers at once. 'filter' finds and applies any of GIMP's ~180 GEGL filters, merged or live (filter ops, filter info, filter apply, filter ls/rm/merge). 'pdb' finds and runs any of GIMP's ~1000 PDB procedures, including plug-ins and file formats (pdb search, pdb info, pdb run): use it for anything without its own command, such as scaling, cropping, selections or drawing. 'open', 'new' and 'save' handle files; 'view' saves a PNG of an image and prints its path, so you can look at the result. 'python' runs one-off Python inside GIMP, from stdin. Commands that take layers read ids or paths from arguments or stdin, so they chain: layers | jq -c 'select(.kind==\"text\")' | layer set visible false. Values are checked before anything changes, and each command is one undo step per image. Changes are real edits to the open images: confirm with the user before modifying them.",
-  "setup": "1. Install the GIMP plug-in: gimp-shell plugin install (GIMP 3.x; start GIMP once first so its config folder exists).\n2. Restart GIMP, then start the bridge from Tools > gimp-shell > Start Bridge. It runs until GIMP quits.\nCheck with: gimp-shell commands\nThe bridge listens on 127.0.0.1:9520 with no token; to change either, set {\"port\": N, \"token\": \"...\"} in ~/.agent-shell/gimp/bridge.json and GIMP_SHELL_PORT / GIMP_SHELL_TOKEN for gimp-shell.\nAdd a folder of your own Python commands with: gimp-shell commands add PATH",
+  "setup": "1. Install the GIMP plug-in: mcp-sh-gimp plugin install (GIMP 3.x; start GIMP once first so its config folder exists).\n2. Restart GIMP, then start the bridge from Tools > mcp-sh-gimp > Start Bridge. It runs until GIMP quits.\nCheck with: mcp-sh-gimp commands\nThe bridge listens on 127.0.0.1:9520 with no token; to change either, set {\"port\": N, \"token\": \"...\"} in ~/.mcp-sh/gimp/bridge.json and MCP_SH_GIMP_PORT / MCP_SH_GIMP_TOKEN for mcp-sh-gimp.\nAdd a folder of your own Python commands with: mcp-sh-gimp commands add PATH",
   "host": {
-    "address": "127.0.0.1:${GIMP_SHELL_PORT:-9520}",
-    "token": "${GIMP_SHELL_TOKEN}",
-    "hint": "start the bridge in GIMP: Tools > gimp-shell > Start Bridge (install it with 'gimp-shell plugin install', then restart GIMP)",
+    "address": "127.0.0.1:${MCP_SH_GIMP_PORT:-9520}",
+    "token": "${MCP_SH_GIMP_TOKEN}",
+    "hint": "start the bridge in GIMP: Tools > mcp-sh-gimp > Start Bridge (install it with 'mcp-sh-gimp plugin install', then restart GIMP)",
     "exec": { "command": "python", "lang": "python" }
   }
 }

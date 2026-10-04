@@ -56,7 +56,7 @@ func TestPluginRemoveRefusesForeignFolder(t *testing.T) {
 	dir := t.TempDir()
 	os.MkdirAll(filepath.Join(dir, pluginName), 0o755)
 	os.WriteFile(filepath.Join(dir, pluginName, "other.py"), []byte("x"), 0o644)
-	if _, errOut, code := runPluginCmd(t, "dev", "remove", "--dir", dir); code != 1 || !strings.Contains(errOut, "not the gimp-shell plug-in") {
+	if _, errOut, code := runPluginCmd(t, "dev", "remove", "--dir", dir); code != 1 || !strings.Contains(errOut, "not the mcp-sh-gimp plug-in") {
 		t.Fatalf("remove foreign: %d %q", code, errOut)
 	}
 }

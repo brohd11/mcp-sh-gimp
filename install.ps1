@@ -1,6 +1,6 @@
-# Install gimp-shell into %LOCALAPPDATA%\bin.
+# Install mcp-sh-gimp into %LOCALAPPDATA%\bin.
 #
-#   irm https://raw.githubusercontent.com/brohd11/gimp-shell/main/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/brohd11/mcp-sh-gimp/main/install.ps1 | iex
 #
 # Env overrides (set them before the pipeline):
 #   $env:BIN_DIR = 'C:\tools'    install target   (default: %LOCALAPPDATA%\bin)
@@ -13,8 +13,8 @@
 # Update the template, then run the workspace's render-go.sh.
 
 # ---- config ----
-$Repo       = 'brohd11/gimp-shell'
-$Binary     = 'gimp-shell'
+$Repo       = 'brohd11/mcp-sh-gimp'
+$Binary     = 'mcp-sh-gimp'
 $ArchiveExt = 'zip'                                # zip | tar.gz
 $Supported  = 'windows-amd64'
 

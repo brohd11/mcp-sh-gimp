@@ -1,7 +1,7 @@
 # summary: save a PNG of what an image looks like and print its path: view [IMAGE] [--max N]
 # usage: view [IMAGE] [--max N]     IMAGE: #ID or file name (default: the only open image)
 # The visible layers, live filters included, scaled to fit N pixels (default 1024), saved
-# under ~/.agent-shell/gimp/images/ (the newest 50 are kept). Open the path to look at it.
+# under ~/.mcp-sh/gimp/images/ (the newest 50 are kept). Open the path to look at it.
 import time
 
 args = list(ARGS)
@@ -22,7 +22,7 @@ else:
         fail("%s: name one (open: %s)" % ("no image is open" if not images else "%d images are open" % len(images), open_images(images)))
     img = images[0]
 
-folder = os.path.join(os.path.expanduser("~"), ".agent-shell", "gimp", "images")
+folder = os.path.join(os.path.expanduser("~"), ".mcp-sh", "gimp", "images")
 os.makedirs(folder, exist_ok=True)
 path = os.path.join(folder, "view-%s-%s.png" % (img.get_id(), time.strftime("%Y%m%d-%H%M%S")))
 copy = img.duplicate()

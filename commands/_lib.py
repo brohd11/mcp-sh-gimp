@@ -1,4 +1,4 @@
-# Shared helpers for gimp-shell's script commands, defined before every Python command.
+# Shared helpers for mcp-sh-gimp's script commands, defined before every Python command.
 # A user commands/_lib.py is appended after this one and can add or replace helpers.
 #
 # Commands run in the bridge plug-in's process, one at a time, each in a fresh namespace.

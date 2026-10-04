@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# gimp-shell bridge: lets gimp-shell run Python inside GIMP 3.
+# mcp-sh-gimp bridge: lets mcp-sh-gimp run Python inside GIMP 3.
 #
-# It speaks agent-shell's host protocol (v1): a loopback TCP server that reads one JSON
+# It speaks mcp-sh's host protocol (v1): a loopback TCP server that reads one JSON
 # request line and writes one JSON response line per connection.
 #
 #   -> {"id":1,"method":"hello","token":"..."}
@@ -13,9 +13,9 @@
 # only hands it over and waits. Each run gets a fresh namespace, keeps what it printed
 # when it fails, and has PDB errors returned to it instead of shown in GIMP's console.
 #
-# Port and token come from GIMP_SHELL_PORT / GIMP_SHELL_TOKEN, else from
-# ~/.agent-shell/gimp/bridge.json ({"port": 9520, "token": "..."}); the default is port
-# 9520 with no token. Start it from Tools > gimp-shell > Start Bridge.
+# Port and token come from MCP_SH_GIMP_PORT / MCP_SH_GIMP_TOKEN, else from
+# ~/.mcp-sh/gimp/bridge.json ({"port": 9520, "token": "..."}); the default is port
+# 9520 with no token. Start it from Tools > mcp-sh-gimp > Start Bridge.
 import hmac
 import io
 import json
@@ -30,11 +30,11 @@ import gi
 gi.require_version("Gimp", "3.0")
 from gi.repository import GLib, GObject, Gimp  # noqa: E402
 
-BRIDGE_VERSION = "dev"  # stamped by `gimp-shell plugin install`
-PROC_START = "plug-in-gimp-shell-bridge"
+BRIDGE_VERSION = "dev"  # stamped by `mcp-sh-gimp plugin install`
+PROC_START = "plug-in-mcp-sh-gimp-bridge"
 DEFAULT_PORT = 9520
 MAX_REQUEST = 64 << 20
-RUN_TIMEOUT = 600  # seconds; agent-shell has its own, shorter timeout per run
+RUN_TIMEOUT = 600  # seconds; mcp-sh has its own, shorter timeout per run
 
 PYTHON_HELP = """usage: python [ARGS...] < CODE
 Run Python inside GIMP, with ARGS as a list of strings. Gimp, Gegl, Gio, GLib and GObject
@@ -48,12 +48,12 @@ after whatever was printed before it.
 
 def log(msg):
     # Never sys.stdout: while code runs, that is the command's output.
-    print("[gimp-shell] " + msg, file=sys.__stderr__, flush=True)
+    print("[mcp-sh-gimp] " + msg, file=sys.__stderr__, flush=True)
 
 
 def load_settings():
     port, token = DEFAULT_PORT, ""
-    base = os.environ.get("AGENT_SHELL_CONFIG_DIR") or os.path.join(os.path.expanduser("~"), ".agent-shell")
+    base = os.environ.get("MCP_SH_CONFIG_DIR") or os.path.join(os.path.expanduser("~"), ".mcp-sh")
     path = os.path.join(base, "gimp", "bridge.json")
     try:
         with open(path, encoding="utf-8") as f:
@@ -64,14 +64,14 @@ def load_settings():
         pass
     except (ValueError, OSError) as e:
         log("ignoring %s: %s" % (path, e))
-    if os.environ.get("GIMP_SHELL_PORT", "").isdigit():
-        port = int(os.environ["GIMP_SHELL_PORT"])
-    token = os.environ.get("GIMP_SHELL_TOKEN", token)
+    if os.environ.get("MCP_SH_GIMP_PORT", "").isdigit():
+        port = int(os.environ["MCP_SH_GIMP_PORT"])
+    token = os.environ.get("MCP_SH_GIMP_TOKEN", token)
     return port, token
 
 
 def error_text(exc):
-    """An exception as the agent should see it: a Fail (gimp-shell's lib) as its message,
+    """An exception as the agent should see it: a Fail (mcp-sh-gimp's lib) as its message,
     anything else as its type and message, with the innermost line of the command."""
     if type(exc).__name__ == "Fail":
         return str(exc)
@@ -87,7 +87,7 @@ def error_text(exc):
 def execute(code, args):
     """Run code; its output, error output and exit code."""
     out, err = io.StringIO(), io.StringIO()
-    namespace = {"__name__": "__gimp_shell__", "ARGS": list(args)}
+    namespace = {"__name__": "__mcp_sh_gimp__", "ARGS": list(args)}
     exit_code = 0
     saved = sys.stdout, sys.stderr
     sys.stdout, sys.stderr = out, err
@@ -197,7 +197,7 @@ def read_line(conn):
     return bytes(buf).split(b"\n", 1)[0].decode("utf-8")
 
 
-class GimpShellBridge(Gimp.PlugIn):
+class McpShGimpBridge(Gimp.PlugIn):
     def do_set_i18n(self, procname):
         return False
 
@@ -208,14 +208,14 @@ class GimpShellBridge(Gimp.PlugIn):
         procedure = Gimp.Procedure.new(self, name, Gimp.PDBProcType.PLUGIN, self.run, None)
         procedure.set_menu_label("Start Bridge")
         procedure.set_documentation(
-            "Start the gimp-shell bridge",
-            "Lets gimp-shell run Python in GIMP over a loopback socket, until GIMP quits.",
+            "Start the mcp-sh-gimp bridge",
+            "Lets mcp-sh-gimp run Python in GIMP over a loopback socket, until GIMP quits.",
             name)
-        procedure.set_attribution("gimp-shell", "gimp-shell", "2026")
+        procedure.set_attribution("mcp-sh-gimp", "mcp-sh-gimp", "2026")
         procedure.set_sensitivity_mask(Gimp.ProcedureSensitivityMask.ALWAYS)
         procedure.add_enum_argument("run-mode", "Run mode", "The run mode", Gimp.RunMode,
                                     Gimp.RunMode.INTERACTIVE, GObject.ParamFlags.READWRITE)
-        procedure.add_menu_path("<Image>/Tools/gimp-shell")
+        procedure.add_menu_path("<Image>/Tools/mcp-sh-gimp")
         return procedure
 
     def run(self, procedure, config, run_data):
@@ -224,15 +224,15 @@ class GimpShellBridge(Gimp.PlugIn):
         try:
             bridge.listen()
         except OSError as e:
-            Gimp.message("gimp-shell bridge: port %d is in use (already running?): %s" % (port, e))
+            Gimp.message("mcp-sh-gimp bridge: port %d is in use (already running?): %s" % (port, e))
             return procedure.new_return_values(Gimp.PDBStatusType.EXECUTION_ERROR, GLib.Error())
         # PDB failures come back to the code that called them, not GIMP's error console.
         self.set_pdb_error_handler(Gimp.PDBErrorHandler.PLUGIN)
         log("listening on 127.0.0.1:%d%s" % (port, " (token required)" if token else ""))
-        Gimp.message("gimp-shell bridge listening on 127.0.0.1:%d" % port)
+        Gimp.message("mcp-sh-gimp bridge listening on 127.0.0.1:%d" % port)
         # This process now serves until GIMP quits; code runs here, on the main loop.
         GLib.MainLoop().run()
         return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
 
 
-Gimp.main(GimpShellBridge.__gtype__, sys.argv)
+Gimp.main(McpShGimpBridge.__gtype__, sys.argv)

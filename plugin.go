@@ -13,24 +13,24 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/brohd11/agent-shell"
+	"github.com/brohd11/mcp-sh"
 )
 
 // pluginSrc is the GIMP plug-in, written into GIMP's plug-ins folder by
-// `gimp-shell plugin install`, so the shell and the bridge it talks to always come from
+// `mcp-sh-gimp plugin install`, so the shell and the bridge it talks to always come from
 // the same tag.
 //
-//go:embed plugin/gimp-shell-bridge/gimp-shell-bridge.py
+//go:embed plugin/mcp-sh-gimp-bridge/mcp-sh-gimp-bridge.py
 var pluginSrc []byte
 
 const (
-	pluginName    = "gimp-shell-bridge" // folder and script name; GIMP needs them to match
+	pluginName    = "mcp-sh-gimp-bridge" // folder and script name; GIMP needs them to match
 	pluginUsage   = "plugin install|status|remove [--dir PLUGINS_DIR]"
-	pluginSummary = "Install, check or remove the GIMP plug-in (the bridge gimp-shell talks to)"
+	pluginSummary = "Install, check or remove the GIMP plug-in (the bridge mcp-sh-gimp talks to)"
 )
 
-func pluginCommand(version string) agentshell.Subcommand {
-	return agentshell.Subcommand{
+func pluginCommand(version string) mcpsh.Subcommand {
+	return mcpsh.Subcommand{
 		Name: "plugin", Usage: pluginUsage, Summary: pluginSummary,
 		Run: func(args []string, stdout, stderr io.Writer) int {
 			return runPlugin(version, args, stdout, stderr)
@@ -40,7 +40,7 @@ func pluginCommand(version string) agentshell.Subcommand {
 
 func runPlugin(version string, args []string, stdout, stderr io.Writer) int {
 	usage := func() int {
-		fmt.Fprintf(stderr, "usage: gimp-shell %s\n", pluginUsage)
+		fmt.Fprintf(stderr, "usage: mcp-sh-gimp %s\n", pluginUsage)
 		return 2
 	}
 	if len(args) == 0 {
@@ -137,7 +137,7 @@ var bridgeVersion = regexp.MustCompile(`(?m)^BRIDGE_VERSION = "([^"]*)"`)
 func installPlugin(dir, version string, stdout io.Writer) error {
 	dest := filepath.Join(dir, pluginName)
 	if installed, ok := readBridgeVersion(dest); ok && compareVersions(installed, version) > 0 {
-		return fmt.Errorf("installed plug-in %s is newer than this binary (%s); update gimp-shell", installed, version)
+		return fmt.Errorf("installed plug-in %s is newer than this binary (%s); update mcp-sh-gimp", installed, version)
 	}
 	if err := os.MkdirAll(dest, 0o755); err != nil {
 		return err
@@ -151,8 +151,8 @@ func installPlugin(dir, version string, stdout io.Writer) error {
 	if err := os.Chmod(script, 0o755); err != nil {
 		return err
 	}
-	fmt.Fprintf(stdout, "Installed the gimp-shell plug-in %s in %s\n", version, dest)
-	fmt.Fprintln(stdout, "Restart GIMP, then start it from Tools > gimp-shell > Start Bridge.")
+	fmt.Fprintf(stdout, "Installed the mcp-sh-gimp plug-in %s in %s\n", version, dest)
+	fmt.Fprintln(stdout, "Restart GIMP, then start it from Tools > mcp-sh-gimp > Start Bridge.")
 	return nil
 }
 
@@ -160,9 +160,9 @@ func pluginStatus(dir, version string, stdout io.Writer) {
 	fmt.Fprintf(stdout, "plug-ins  %s\n", dir)
 	switch installed, ok := readBridgeVersion(filepath.Join(dir, pluginName)); {
 	case !ok:
-		fmt.Fprintln(stdout, "plug-in   not installed: gimp-shell plugin install")
+		fmt.Fprintln(stdout, "plug-in   not installed: mcp-sh-gimp plugin install")
 	case installed != version:
-		fmt.Fprintf(stdout, "plug-in   %s, binary is %s: gimp-shell plugin install, then restart GIMP\n", installed, version)
+		fmt.Fprintf(stdout, "plug-in   %s, binary is %s: mcp-sh-gimp plugin install, then restart GIMP\n", installed, version)
 	default:
 		fmt.Fprintf(stdout, "plug-in   %s (matches the binary)\n", installed)
 	}
@@ -175,7 +175,7 @@ func removePlugin(dir string, stdout io.Writer) error {
 			fmt.Fprintf(stdout, "No plug-in in %s\n", dest)
 			return nil
 		}
-		return fmt.Errorf("%s is not the gimp-shell plug-in; not removing it", dest)
+		return fmt.Errorf("%s is not the mcp-sh-gimp plug-in; not removing it", dest)
 	}
 	if err := os.RemoveAll(dest); err != nil {
 		return err
