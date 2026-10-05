@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -25,7 +26,8 @@ func TestPluginInstallStatusRemove(t *testing.T) {
 	}
 	script := filepath.Join(dir, pluginName, pluginName+".py")
 	info, err := os.Stat(script)
-	if err != nil || info.Mode().Perm()&0o111 == 0 {
+	// Windows has no exec bits to check.
+	if err != nil || (runtime.GOOS != "windows" && info.Mode().Perm()&0o111 == 0) {
 		t.Fatalf("script not installed executable: %v %v", info, err)
 	}
 	if v, ok := readBridgeVersion(filepath.Join(dir, pluginName)); !ok || v != "v1.2.0" {
