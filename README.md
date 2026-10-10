@@ -16,7 +16,7 @@ mcp-sh-gimp run 'view "#2"'      # prints the path of a PNG of the image
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/brohd11/mcp-sh-gimp/main/install.sh | sh
-mcp-sh-gimp setup            # ~/.mcp-sh/gimp/ + `claude mcp add -s user mcp-sh-gimp -- <path>`
+mcp-sh-gimp setup            # ~/.mcp-sh/gimp/ + prints the claude/codex mcp add commands
 mcp-sh-gimp plugin install   # the bridge plug-in, into GIMP's newest 3.x plug-ins folder
 ```
 
