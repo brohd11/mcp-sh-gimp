@@ -6,18 +6,18 @@ A sandboxed bash shell over the running GIMP session, served over MCP. Built on
 plug-in that ships with mcp-sh-gimp.
 
 ```sh
-mcp-sh-gimp run 'layers | jq -c "select(.kind == \"text\")" | layer set visible false'
-mcp-sh-gimp run 'filter ops blur'
-mcp-sh-gimp run 'layers "#2" | head -1 | filter apply gegl:gaussian-blur std-dev-x=8 std-dev-y=8'
-mcp-sh-gimp run 'view "#2"'      # prints the path of a PNG of the image
+mcp_sh_gimp run 'layers | jq -c "select(.kind == \"text\")" | layer set visible false'
+mcp_sh_gimp run 'filter ops blur'
+mcp_sh_gimp run 'layers "#2" | head -1 | filter apply gegl:gaussian-blur std-dev-x=8 std-dev-y=8'
+mcp_sh_gimp run 'view "#2"'      # prints the path of a PNG of the image
 ```
 
 ## Install
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/brohd11/mcp-sh-gimp/main/install.sh | sh
-mcp-sh-gimp setup            # ~/.mcp-sh/gimp/ + prints the claude/codex mcp add commands
-mcp-sh-gimp plugin install   # the bridge plug-in, into GIMP's newest 3.x plug-ins folder
+mcp_sh_gimp setup            # ~/.mcp-sh/gimp/ + prints the claude/codex mcp add commands
+mcp_sh_gimp plugin install   # the bridge plug-in, into GIMP's newest 3.x plug-ins folder
 ```
 
 On Windows: `irm https://raw.githubusercontent.com/brohd11/mcp-sh-gimp/main/install.ps1 | iex`.
@@ -25,7 +25,7 @@ On Windows: `irm https://raw.githubusercontent.com/brohd11/mcp-sh-gimp/main/inst
 Start GIMP once before `plugin install`, so its config folder exists (or pass
 `--dir PLUGINS_DIR`, from Edit > Preferences > Folders > Plug-ins). Then restart GIMP and
 start the bridge from **Tools > mcp-sh-gimp > Start Bridge**; it runs until GIMP quits.
-`mcp-sh-gimp commands` checks the connection, and `mcp-sh-gimp plugin status` whether the
+`mcp_sh_gimp commands` checks the connection, and `mcp_sh_gimp plugin status` whether the
 installed plug-in matches the binary (after an update: `plugin install` again, then restart
 GIMP).
 
@@ -85,7 +85,7 @@ procedures instead.
 Keep your own Python commands in a folder of their own and add it:
 
 ```sh
-mcp-sh-gimp commands add ~/code/gimp-tools
+mcp_sh_gimp commands add ~/code/gimp-tools
 ```
 
 A `_lib.py` in that folder is appended to the built-in one, so your commands can use and
@@ -96,12 +96,12 @@ built-in commands do. See the mcp-sh README for the script format and folder ord
 ## Development
 
 ```sh
-make           # host build -> build/<os>-<arch>/mcp-sh-gimp
+make           # host build -> build/<os>-<arch>/mcp_sh_gimp
 make test
 make package   # release archives for every platform
 ```
 
-After editing the plug-in, `mcp-sh-gimp plugin install` (from a fresh build) and restart GIMP.
+After editing the plug-in, `mcp_sh_gimp plugin install` (from a fresh build) and restart GIMP.
 
 The makefile body, installers, workflows and `cliff.toml` are rendered from
 [sh-templates](https://github.com/brohd11/sh-templates) by the workspace's `render-go.sh`.

@@ -1,5 +1,5 @@
 // mcp-sh-gimp: a sandboxed bash shell over GIMP, served over MCP.
-// See `mcp-sh-gimp --help` and the README.
+// See `mcp_sh_gimp --help` and the README.
 package main
 
 import (
@@ -19,7 +19,7 @@ var version = "dev"
 
 func main() {
 	mcpsh.Main(mcpsh.Config{
-		Name:        "mcp-sh-gimp",
+		Name:        "mcp_sh_gimp",
 		App:         "gimp",
 		Version:     version,
 		UpdateRepo:  "brohd11/mcp-sh-gimp",

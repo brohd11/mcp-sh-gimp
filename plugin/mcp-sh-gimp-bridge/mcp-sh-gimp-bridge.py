@@ -30,7 +30,7 @@ import gi
 gi.require_version("Gimp", "3.0")
 from gi.repository import GLib, GObject, Gimp  # noqa: E402
 
-BRIDGE_VERSION = "dev"  # stamped by `mcp-sh-gimp plugin install`
+BRIDGE_VERSION = "dev"  # stamped by `mcp_sh_gimp plugin install`
 PROC_START = "plug-in-mcp-sh-gimp-bridge"
 DEFAULT_PORT = 9520
 MAX_REQUEST = 64 << 20

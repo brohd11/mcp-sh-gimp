@@ -1,4 +1,4 @@
-# Install mcp-sh-gimp into %LOCALAPPDATA%\bin.
+# Install mcp_sh_gimp into %LOCALAPPDATA%\bin.
 #
 #   irm https://raw.githubusercontent.com/brohd11/mcp-sh-gimp/main/install.ps1 | iex
 #
@@ -14,7 +14,7 @@
 
 # ---- config ----
 $Repo       = 'brohd11/mcp-sh-gimp'
-$Binary     = 'mcp-sh-gimp'
+$Binary     = 'mcp_sh_gimp'
 $ArchiveExt = 'zip'                                # zip | tar.gz
 $Supported  = 'windows-amd64'
 
